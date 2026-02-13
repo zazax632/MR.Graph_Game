@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun with Functions | Ultimate Edition</title>
+    <link rel="stylesheet" href="css/fingin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Math and Chart Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Background Particles/Shapes -->
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+
+        <!-- AI Helper -->
+        <div class="ai-helper-container" id="aiHelper">
+            <img src="assets/ai_math_helper.png" alt="AI Helper" class="ai-avatar floating">
+            <div class="ai-bubble" id="aiMessage">สวัสดี! พร้อมลุยคณิตศาสตร์หรือยัง?</div>
+        </div>
+
+        <!-- VIEW: LOGIN -->
+        <section id="view-login" class="view active">
+            <div class="glass-panel login-panel">
+                <h1 class="game-title">FUN <span>WITH</span> FUNCTIONS</h1>
+                <p class="subtitle">Ultimate Education Game</p>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <input type="text" id="playerName" placeholder="กรอกชื่อของคุณ..." required maxlength="15">
+                    </div>
+                    <button type="submit" class="btn-primary pulse">Start Adventure!</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW: MAIN MENU -->
+        <section id="view-menu" class="view hidden">
+            <div class="glass-panel menu-panel">
+                <header class="menu-header">
+                    <h2>สวัสดี, <span id="displayPlayerName">Player</span></h2>
+                    <div class="player-stats-mini">
+                        <span class="badge-xp">Level <span id="menuLevel">1</span> (XP: <span
+                                id="menuXP">0</span>)</span>
+                    </div>
+                </header>
+
+                <h3 class="section-title">เลือกภารกิจ</h3>
+                <div class="mode-actions">
+                    <button class="btn-small" onclick="ui.showAchievements()">🏅 Achievements</button>
+                    <button class="btn-small" onclick="game.start2PMode()">⚔️ 2 Players</button>
+                </div>
+                <div class="mode-grid" id="modeGrid">
+                    <div class="mode-card" onclick="game.startMode(1)">
+                        <div class="mode-icon">❓</div>
+                        <div class="mode-title">True / False</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode(2)">
+                        <div class="mode-icon">🔗</div>
+                        <div class="mode-title">Matching</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode(3)">
+                        <div class="mode-icon">⚡</div>
+                        <div class="mode-title">Speed Mode</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode(4)">
+                        <div class="mode-icon">📈</div>
+                        <div class="mode-title">Reading Graphs</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode(5)">
+                        <div class="mode-icon">✍️</div>
+                        <div class="mode-title">Fill Blanks</div>
+                    </div>
+                    <div class="mode-card" onclick="game.startMode(6)"
+                        style="grid-column: span 3; background: #ffeaa7;">
+                        <div class="mode-icon">👹</div>
+                        <div class="mode-title">BOSS BATTLE</div>
+                    </div>
+                </div>
+
+                <div class="menu-actions">
+                    <button class="btn-secondary" onclick="ui.showLeaderboard()">🏆 Leaderboard</button>
+                    <button class="btn-danger" onclick="game.logout()">Exit</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: GAME HUD & PLAY AREA -->
+        <section id="view-game" class="view hidden">
+            <!-- HUD -->
+            <div class="hud">
+                <div class="hud-item score-box">
+                    <span class="hud-label">SCORE</span>
+                    <span class="hud-value" id="gameScore">0</span>
+                </div>
+                <div class="hud-item timer-box">
+                    <span class="hud-label">TIME</span>
+                    <span class="hud-value" id="gameTimer">30</span>
+                </div>
+                <!-- Boss Health (Hidden by default) -->
+                <div class="hud-item boss-hp hidden" id="bossHPContainer">
+                    <span class="hud-label">LIFE</span>
+                    <span class="hud-value" id="bossLives">❤❤❤</span>
+                </div>
+                <button class="btn-icon close-btn" onclick="game.quitMode()">❌</button>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-container">
+                <div class="progress-bar" id="gameProgress"></div>
+            </div>
+
+            <!-- Game Content Container -->
+            <div class="game-content glass-panel" id="gameContent">
+                <!-- Dynamic Content Injected Here -->
+            </div>
+        </section>
+
+        <!-- VIEW: LEADERBOARD -->
+        <section id="view-leaderboard" class="view hidden">
+            <div class="glass-panel leaderboard-panel">
+                <h2>🏆 Hall of Fame</h2>
+                <ul class="leaderboard-list" id="leaderboardList"></ul>
+                <button class="btn-primary" onclick="ui.showMenu()">Back to Menu</button>
+            </div>
+        </section>
+
+        <!-- VIEW: ACHIEVEMENTS -->
+        <section id="view-achievements" class="view hidden">
+            <div class="glass-panel leaderboard-panel">
+                <h2>🏅 Achievements</h2>
+                <div class="achievement-grid" id="achievementList">
+                    <!-- Populated by JS -->
+                </div>
+                <button class="btn-primary" onclick="ui.showMenu()">Back to Menu</button>
+            </div>
+        </section>
+
+        <!-- VIEW: 2 PLAYER -->
+        <section id="view-2p" class="view hidden">
+            <div class="split-screen-container">
+                <!-- Player 1 -->
+                <div class="p1-area">
+                    <div class="p-hud">
+                        <span>P1 Score: <b id="p1Score">0</b></span>
+                    </div>
+                    <div class="p-content" id="p1Content"></div>
+                    <div class="p-controls" id="p1Controls"></div>
+                </div>
+                <!-- Divider -->
+                <div class="split-divider">
+                    <div class="vs-badge">VS</div>
+                </div>
+                <!-- Player 2 -->
+                <div class="p2-area">
+                    <div class="p-hud">
+                        <span>P2 Score: <b id="p2Score">0</b></span>
+                    </div>
+                    <div class="p-content" id="p2Content"></div>
+                    <div class="p2-controls" id="p2Controls"></div>
+                </div>
+            </div>
+            <button class="btn-icon close-btn" style="position:fixed; top:20px; right:20px; z-index:100;"
+                onclick="game.quitMode()">❌</button>
+        </section>
+
+
+
+        <!-- Toast / Notification Overlay -->
+        <div id="feedbackOverlay" class="feedback-overlay hidden">
+            <div id="feedbackText">ถูกต้อง! +10</div>
+            <div id="feedbackExplanation" style="font-size: 1rem; margin-top: 10px; font-weight: normal;"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <!-- levels.js is deprecated, replaced by questions.js -->
+    <script src="js/fingin-questions.js"></script>
+    <script src="js/fingin.js"></script>
+</body>
+
+</html>
